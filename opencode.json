@@ -1,0 +1,199 @@
+{
+  "model": "github-copilot/claude-sonnet-4.5",
+  "mcp": {
+    "context7": {
+      "type": "local",
+      "command": [
+        "npx",
+        "-y",
+        "--node-options=--experimental-fetch",
+        "@upstash/context7-mcp"
+      ],
+      "enabled": true
+    },
+    "playwright": {
+      "type": "local",
+      "command": [
+        "npx",
+        "-y",
+        "@playwright/mcp@latest",
+        "--isolated"
+      ],
+      "enabled": true
+    },
+    "serena": {
+      "type": "local",
+      "command": ["uvx", "--from", "git+https://github.com/oraios/serena", "serena", "start-mcp-server"],
+      "enabled": false
+    },
+    "tmux-mcp": {
+      "type": "local",
+      "command": [
+        "npx",
+        "-y",
+        "tmux-mcp"
+      ],
+      "enabled": true
+    },
+    "container-use": {
+      "type": "local",
+      "command": ["container-use", "stdio"],
+      "enabled": false
+    }
+  },
+  "agent": {
+    "plan": {
+      "prompt": "{file:./prompts/plan.md}",
+      "tools": {
+        "read": true,
+        "grep": true,
+        "find": true,
+        "list": true,
+        "todowrite": true,
+        "todoread": true,
+        "webfetch": true
+      },
+      "permission": {
+        "edit": "ask",
+        "write": "ask",
+        "bash": {
+          "cat*": "allow",
+          "rm*": "deny",
+          "mv*": "deny",
+          "grep*": "allow",
+          "rg*": "allow",
+          "find*": "allow",
+          "ls*": "allow",
+          "sem*": "allow",
+          "cd*": "allow",
+          "gh*": "allow",
+          "head*": "allow",
+          "tail*": "allow",
+          "jq*": "allow",
+          "git commit*": "ask",
+          "git diff": "allow",
+          "git push": "deny",
+          "git status": "allow",
+          "git *": "ask",
+          "xargs grep *": "allow",
+          "wc *": "allow",
+          "*": "ask"
+        }
+      }
+    },
+    "research": {
+      "mode": "primary",
+      "prompt": "{file:./prompts/research.md}",
+      "tools": {
+        "read": true,
+        "grep": true,
+        "find": true,
+        "list": true,
+        "todoread": true,
+        "webfetch": true
+      },
+      "permission": {
+        "edit": "ask",
+        "write": "ask",
+        "bash": {
+          "cat*": "allow",
+          "rm*": "deny",
+          "mv*": "deny",
+          "grep*": "allow",
+          "rg*": "allow",
+          "find*": "allow",
+          "ls*": "allow",
+          "sem*": "allow",
+          "cd*": "allow",
+          "gh*": "allow",
+          "head*": "allow",
+          "tail*": "allow",
+          "jq*": "allow",
+          "git commit*": "ask",
+          "git diff": "allow",
+          "git push": "deny",
+          "git status": "allow",
+          "git *": "ask",
+          "xargs grep *": "allow",
+          "wc *": "allow",
+          "*": "ask"
+        }
+      }
+    },
+    "researcher": {
+      "description": "Researches topics and gathers information",
+      "mode": "subagent",
+      "prompt": "You are an expert researcher. Use the existing codebase to research the provided topic. Do not describes, testing plans, migration plans, estimates. Focus only on the topic given. Be concise and to the point. If researching code changes then provide code snippets where relevant. Do not edit source or project files. Do not move or delete files.",
+      "tools": {
+        "write": false,
+        "edit": false,
+        "bash": false,
+        "tmux*": false
+      }
+    },
+    "code-reviewer": {
+      "description": "Reviews code for best practices and potential issues",
+      "mode": "subagent",
+      "prompt": "You are a code reviewer. Focus on security, performance, and maintainability.",
+      "tools": {
+        "write": false,
+        "edit": false
+      }
+    },
+    "ci": {
+      "description": "Looks at the result of a CI run and attempts to fix issues",
+      "mode": "primary",
+      "prompt": "You're here to help understand failures in the current git branch when run on semaphore CI. Use the CLI tools, gh (github) and sem (semaphore) cli tools to look at the most recent workflow run for this PR or branch and return what you believe needs to changed in order to fix the failures. You can get the workflow id from the GitHub checks for this PR or branch. You can use the sem cli to get more information about the failures. If there are lots of failures, focus on the first 3-5. Do not attempt to make the fixes yourself. You are in read-only mode",
+      "tools": {
+        "write": false,
+        "edit": false,
+        "fetch": true
+      },
+      "permission": {
+        "webfetch": "allow",
+        "bash": {
+          "cat*": "allow",
+          "rm*": "deny",
+          "mv*": "deny",
+          "grep*": "allow",
+          "rg*": "allow",
+          "find*": "allow",
+          "ls*": "allow",
+          "sem*": "allow",
+          "cd*": "allow",
+          "gh*": "allow",
+          "head*": "allow",
+          "tail*": "allow",
+          "jq*": "allow",
+          "git commit*": "ask",
+          "git diff": "allow",
+          "git push": "deny",
+          "git status": "allow",
+          "git *": "ask",
+          "xargs grep *": "allow",
+          "wc *": "allow",
+          "*": "ask"
+        }
+      }
+    },
+    "playwright": {
+      "description": "Uses playwright to interact with web applications",
+      "mode": "subagent",
+      "prompt": "You are a browser agent that uses the playwright mcp functionality to access web applications and confirm behaviour. When encoutering errors, report these back in detail to the main agent. You do not need to investigate or fix the errors, just report them back in detail.",
+      "tools": {
+        "write": false,
+        "edit": false
+      }
+    },
+    "jaeger": {
+      "description": "Uses playwright to with the locally running Jaeger instance to trace and debug applications",
+      "mode": "subagent",
+      "prompt": "You are a browser agent that uses the playwright mcp functionality to access the locally running Jaeger container to trace and debug applications. You will check that functionality is working as expected and that traces are being generated correctly.",
+      "tools": {
+        "write": false,
+        "edit": false
+      }
+    }
+  },
+  "$schema": "https://opencode.ai/config.json"
+}

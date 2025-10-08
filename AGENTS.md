@@ -1,0 +1,8 @@
+- do not add a watermark when committing changes or creating pull requests
+- when testing code in a Ruby project, write tests that match the current testing framework used in the project (e.g., RSpec, Minitest)
+- do not write custom scripts to test code
+- To test code: use the available test framework and write new tests and examples
+- to get Semaphore workflow ID from GitHub PR check runs: `gh pr checks --json link | jq -r '.[] | select(.link | contains("semaphore")) | .link | split("/")[-2]`
+- to get Semaphore pipeline ID from GitHub PR check runs: `gh pr checks --json link | jq -r '.[] | select(.link | contains("semaphore")) | .link | split("=")[-1]`
+- to look up semaphore workflow run: `sem get pipeline pipeline $pipeline_id`
+- do not use `-v` with `rspec` as it prints the version number; it is not verbose mode
